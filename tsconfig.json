@@ -16,6 +16,9 @@
   "noUnusedParameters": true,
   "noImplicitReturns": false,
   "skipLibCheck": true,
-  "baseUrl": "./packages"
+  "baseUrl": "./packages",
+  "paths": {
+    "hostConfig": ["./reconciler/src/hostConfig.ts"]
+  }
  }
 }
