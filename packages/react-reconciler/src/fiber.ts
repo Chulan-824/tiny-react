@@ -22,6 +22,7 @@ export class FiberNode {
 
 	alternate: FiberNode | null;
 	flags: Flags;
+	subtreeFlags: Flags;
 	updateQueue: unknown;
 
 	constructor(tag: WorkType, pendingProps: Props, key: Key) {
@@ -44,8 +45,9 @@ export class FiberNode {
 		this.memoizedProps = null; // 上一次生成子节点时用到的属性, 生成子节点之后保持在内存中
 		this.memoizedState = null;
 
-		this.alternate = null;
+		this.alternate = null; // 指向内存中的另一个fiber, 每个被更新过fiber节点在内存中都是成对出现(current和workInProgress)
 		this.flags = NoFlags;
+		this.subtreeFlags = NoFlags;
 		this.updateQueue = null;
 	}
 }
@@ -80,6 +82,7 @@ export const createWorkInProgress = (
 		// update
 		wip.pendingProps = pendingProps;
 		wip.flags = NoFlags;
+		wip.subtreeFlags = NoFlags;
 	}
 
 	wip.type = current.type;
