@@ -70,5 +70,50 @@ export const jsx = function (
 	return ReactElement(type, key, ref, props);
 };
 
-// 实际开发环境的 jsx 会做一些额外的检查 但是这里就没必要 都用一个 jsx
-export const jsxDEV = jsx;
+export const jsxDEV = function (
+	type: ElementType,
+	config: any
+	// ...maybeChildren: any
+) {
+	let key = null;
+	let ref = null;
+	const props: Props = {};
+
+	for (const prop in config) {
+		const val = config[prop];
+
+		if (prop === 'key') {
+			if (val !== undefined) {
+				key = '' + val;
+			}
+			continue;
+		}
+
+		if (prop === 'ref') {
+			if (val !== undefined) {
+				ref = val;
+			}
+			continue;
+		}
+
+		if ({}.hasOwnProperty.call(config, prop)) {
+			props[prop] = val;
+		}
+	}
+
+	// const maybeChildrenLength = maybeChildren.length;
+	// console.log(config, 'config');
+
+	// console.log(maybeChildren, 'maybeChildren');
+	// console.log(maybeChildrenLength, 'maybeChildrenLength jsxDEV');
+
+	// if (maybeChildrenLength) {
+	// 	if (maybeChildrenLength === 1) {
+	// 		props.children = maybeChildren[0];
+	// 	} else {
+	// 		props.children = maybeChildren;
+	// 	}
+	// }
+
+	return ReactElement(type, key, ref, props);
+};

@@ -8,7 +8,7 @@ import { HostRoot } from './workTags';
 let workInProgress: FiberNode | null = null;
 
 function prepareFreshStack(root: FiberRootNode) {
-	workInProgress = createWorkInProgress(root.current, {}, null);
+	workInProgress = createWorkInProgress(root.current, {});
 }
 
 export function scheduleUpdateOnFiber(fiber: FiberNode) {
@@ -34,7 +34,6 @@ function markUpdateFromFiberToRoot(fiber: FiberNode) {
 function renderRoot(root: FiberRootNode) {
 	// 初始化
 	prepareFreshStack(root);
-
 	do {
 		try {
 			workLoop();
@@ -54,7 +53,7 @@ function renderRoot(root: FiberRootNode) {
 	commitRoot(root);
 }
 
-function commitRoot(root: FiberNode) {
+function commitRoot(root: FiberRootNode) {
 	const finishWork = root.finishWork;
 
 	if (finishWork === null) {

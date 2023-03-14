@@ -1,6 +1,6 @@
+import { appendChildToContainer, Container } from 'hostConfig';
 import { FiberNode, FiberRootNode } from './fiber';
 import { MutationMask, NoFlags, Placement } from './fiberFlags';
-import { appendChildToContainer, Container } from './hostConfig';
 import { HostComponent, HostRoot, HostText } from './workTags';
 
 let nextEffect: FiberNode | null = null;
@@ -54,12 +54,14 @@ const commitPlacement = (finishWork: FiberNode) => {
 	// parent DOM
 	const hostParent = getHostParent(finishWork);
 
-	// finishWork DOM append parent DOM
-	appendPlacementNodeIntoContainer(finishWork, hostParent);
+	if (hostParent !== null) {
+		// finishWork DOM append parent DOM
+		appendPlacementNodeIntoContainer(finishWork, hostParent);
+	}
 };
 
-function getHostParent(fiber: FiberNode) {
-	const parent = fiber.parent;
+function getHostParent(fiber: FiberNode): Container | null {
+	let parent = fiber.return;
 
 	while (parent) {
 		const parentTag = parent.tag;
@@ -77,6 +79,8 @@ function getHostParent(fiber: FiberNode) {
 	if (__DEV__) {
 		console.warn('未找到host parent');
 	}
+
+	return null;
 }
 
 function appendPlacementNodeIntoContainer(
@@ -85,7 +89,7 @@ function appendPlacementNodeIntoContainer(
 ) {
 	// 找到 fiber 对应宿主环境的 host node
 	if (finishedWork.tag === HostComponent || finishedWork.tag === HostText) {
-		appendChildToContainer(finishedWork.stateNode, hostParent);
+		appendChildToContainer(hostParent, finishedWork.stateNode);
 		return;
 	}
 	const child = finishedWork.child;

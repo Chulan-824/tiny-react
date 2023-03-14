@@ -1,10 +1,10 @@
 import { Props, Key, Ref, ReactElementType } from 'shared/ReactTypes';
-import { FuncitonComponent, HostComponent, WorkType } from './workTags';
+import { FuncitonComponent, HostComponent, WorkTag } from './workTags';
 import { Flags, NoFlags } from './fiberFlags';
 import { Container } from 'hostConfig';
 
 export class FiberNode {
-	tag: WorkType;
+	tag: WorkTag;
 	key: Key;
 	stateNode: any;
 	type: any;
@@ -25,7 +25,7 @@ export class FiberNode {
 	subtreeFlags: Flags;
 	updateQueue: unknown;
 
-	constructor(tag: WorkType, pendingProps: Props, key: Key) {
+	constructor(tag: WorkTag, pendingProps: Props, key: Key) {
 		// 实例
 		this.tag = tag;
 		this.key = key;
@@ -36,7 +36,7 @@ export class FiberNode {
 		this.return = null; // 指向父节点
 		this.sibling = null; // 指向下一个兄弟节点
 		this.child = null; // 指向第一个子节点
-		this.index = null; // fiber 在兄弟节点中的索引, 如果是单节点默认为 0
+		this.index = 0; // fiber 在兄弟节点中的索引, 如果是单节点默认为 0
 
 		this.ref = null;
 
@@ -97,7 +97,7 @@ export const createWorkInProgress = (
 
 export function createFiberFromElement(element: ReactElementType) {
 	const { type, key, props } = element;
-	let fiberTag: WorkType = FuncitonComponent;
+	let fiberTag: WorkTag = FuncitonComponent;
 
 	if (typeof type === 'string') {
 		// <div /> type: 'div'

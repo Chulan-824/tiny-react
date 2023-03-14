@@ -22,7 +22,7 @@ function ChildReconciler(shouldTrackEffects: boolean) {
 		currentFiber: FiberNode | null,
 		content: string | number
 	) {
-		const fiber = new Fiber(HostText, { content }, null);
+		const fiber = new FiberNode(HostText, { content }, null);
 		fiber.return = returnFiber;
 
 		return fiber;
