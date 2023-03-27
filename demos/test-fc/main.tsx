@@ -1,16 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 
 function App() {
-	return (
-		<div>
-			<Child></Child>
-		</div>
-	);
-}
-
-function Child() {
-	return <span>11 tiny-react 22</span>;
+	const [num, setNum] = useState(100);
+	window.setNum = setNum;
+	return <div>{num}</div>;
 }
 
 const root = document.querySelector('#root');
