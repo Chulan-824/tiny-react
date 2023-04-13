@@ -16,7 +16,7 @@ let workInProgressHook: Hook | null = null;
 const { currentDispatcher } = internals;
 interface Hook {
 	memoizedState: any;
-	updateQueue: unkonw;
+	updateQueue: unknown;
 	next: Hook | null;
 }
 
@@ -63,15 +63,15 @@ function mountState<State>(
 	const queue = createUpdateQueue<State>();
 	hook.updateQueue = queue;
 	hook.memoizedState = memoizedState;
-
+	// @ts-ignore
 	const dispatch = dispatchSetState.bind(null, currentlyRenderingFiber, queue);
 	queue.dispatch = dispatch;
 	return [memoizedState, dispatch];
 }
 
-function dispatchSetState(
+function dispatchSetState<State>(
 	fiber: FiberNode,
-	updateQueue: UpdateQueue<Action>,
+	updateQueue: UpdateQueue<State>,
 	action: Action<State>
 ) {
 	const update = createUpdate(action);
