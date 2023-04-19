@@ -6,7 +6,7 @@ import { FiberNode } from './fiber';
 import { renderWithHooks } from './fiberHooks';
 import { processUpdateQueue, UpdateQueue } from './updateQueue';
 import {
-	FuncitonComponent,
+	FunctionComponent,
 	HostComponent,
 	HostRoot,
 	HostText
@@ -21,7 +21,7 @@ export const beginWork = (wip: FiberNode) => {
 			return updateHostComponent(wip);
 		case HostText:
 			return null;
-		case FuncitonComponent:
+		case FunctionComponent:
 			return updateFunctionComponent(wip);
 		default:
 			if (__DEV__) {
