@@ -3,14 +3,19 @@ import ReactDOM from 'react-dom/client';
 
 function App() {
 	const [num, setNum] = useState(100);
-	window.setNum = setNum;
-	return <div onClick={() => setNum(num + 1)}>{num}</div>;
+
+	const arr =
+		num % 2 === 0
+			? [<li key="1">1</li>, <li key="2">2</li>, <li key="3">3</li>]
+			: [<li key="3">3</li>, <li key="2">2</li>, <li key="1">1</li>];
+
+	return <ul onClickCapture={() => setNum(num + 1)}>{arr}</ul>;
 }
 
 function Child() {
-	return <span>tiny-react</span>;
+	return <span>big-react</span>;
 }
 
-const root = document.querySelector('#root');
-
-ReactDOM.createRoot(root).render(<App />);
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+	<App />
+);
