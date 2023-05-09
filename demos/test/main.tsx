@@ -1,21 +1,26 @@
-import React from 'react';
+import { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 
 function App() {
+	const [num, setNum] = useState(100);
+
 	return (
-		<div>
-			<Child></Child>
-		</div>
+		<ul
+			onClickCapture={() => {
+				setNum((num) => num + 1);
+				setNum((num) => num + 1);
+				setNum((num) => num + 1);
+			}}
+		>
+			{num}
+		</ul>
 	);
 }
 
 function Child() {
-	return <span>11 tiny-react 22</span>;
+	return <span>big-react</span>;
 }
 
-const root = document.querySelector('#root');
-
-ReactDOM.createRoot(root).render(<App />);
-
-console.log(React);
-console.log(ReactDOM);
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+	<App />
+);
