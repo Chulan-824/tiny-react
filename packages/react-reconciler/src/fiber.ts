@@ -60,19 +60,31 @@ export class FiberNode {
 	}
 }
 
+export interface PendingPassiveEffects {
+	unmount: Effect[];
+	update: Effect[];
+}
+
 export class FiberRootNode {
 	container: Container; // 配置ts配置文件来引入类型文件是因为不能限制类型文件在reconciler包中
 	current: FiberNode;
-	finishWork: FiberNode | null; // 递归完成后的 hostRootFiber
+	finishedWork: FiberNode | null; // 递归完成后的 hostRootFiber
 	pendingLanes: Lanes;
 	finishedLane: Lane;
+
+	pendingPassiveEffects: PendingPassiveEffects;
 	constructor(container: Container, hostRootFiber: FiberNode) {
 		this.container = container;
 		this.current = hostRootFiber;
 		hostRootFiber.stateNode = this;
-		this.finishWork = null;
+		this.finishedWork = null;
 		this.pendingLanes = NoLanes;
 		this.finishedLane = NoLane;
+
+		this.pendingPassiveEffects = {
+			unmount: [],
+			update: []
+		};
 	}
 }
 
