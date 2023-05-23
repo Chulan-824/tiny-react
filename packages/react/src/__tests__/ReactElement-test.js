@@ -218,6 +218,7 @@ describe('ReactElement', () => {
 		function Test() {
 			return <div />;
 		}
+
 		const test = ReactTestUtils.renderIntoDocument(<Test value={+undefined} />);
 		expect(test.props.value).toBeNaN();
 	});
@@ -226,10 +227,12 @@ describe('ReactElement', () => {
 	// // classic JS without JSX.
 	it('identifies elements, but not JSON, if Symbols are supported', () => {
 		// Rudimentary polyfill
+		// @eslint-
 		// Once all jest engines support Symbols natively we can swap this to test
 		// WITH native Symbols by default.
 		/*eslint-disable */
 		const REACT_ELEMENT_TYPE = function () {}; // fake Symbol
+		// eslint-disable-line no-use-before-define
 		const OTHER_SYMBOL = function () {}; // another fake Symbol
 		/*eslint-enable */
 		global.Symbol = function (name) {

@@ -8,8 +8,8 @@ export interface ReactElementType {
 	$$typeof: symbol | number;
 	type: ElementType;
 	key: Key;
-	ref: Ref;
 	props: Props;
+	ref: Ref;
 	__mark: string;
 }
 

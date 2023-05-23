@@ -12,9 +12,8 @@ import { scheduleUpdateOnFiber } from './workLoop';
 import { HostRoot } from './workTags';
 
 export function createContainer(container: Container) {
-	const hostRootFiber = new FiberNode(HostRoot, {}, null); // hostRootFiber
-	const root = new FiberRootNode(container, hostRootFiber); // fiberRootNode
-
+	const hostRootFiber = new FiberNode(HostRoot, {}, null);
+	const root = new FiberRootNode(container, hostRootFiber);
 	hostRootFiber.updateQueue = createUpdateQueue();
 	return root;
 }
@@ -31,6 +30,5 @@ export function updateContainer(
 		update
 	);
 	scheduleUpdateOnFiber(hostRootFiber, lane);
-
 	return element;
 }

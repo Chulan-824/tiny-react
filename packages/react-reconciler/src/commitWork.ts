@@ -2,19 +2,22 @@ import {
 	appendChildToContainer,
 	commitUpdate,
 	Container,
+	insertChildToContainer,
 	Instance,
-	removeChild,
-	insertChildToContainer
+	removeChild
 } from 'hostConfig';
-import { FiberNode, FiberRootNode } from './fiber';
+import { FiberNode, FiberRootNode, PendingPassiveEffects } from './fiber';
 import {
 	ChildDeletion,
+	Flags,
 	MutationMask,
 	NoFlags,
 	PassiveEffect,
+	PassiveMask,
 	Placement,
 	Update
 } from './fiberFlags';
+import { Effect, FCUpdateQueue } from './fiberHooks';
 import { HookHasEffect } from './hookEffectTags';
 import {
 	FunctionComponent,
@@ -30,50 +33,46 @@ export const commitMutationEffects = (
 	root: FiberRootNode
 ) => {
 	nextEffect = finishedWork;
+
 	while (nextEffect !== null) {
+		// 向下遍历
 		const child: FiberNode | null = nextEffect.child;
+
 		if (
-			(nextEffect.subtreeFlags & (MutationMask | PassiveEffect)) !== NoFlags &&
+			(nextEffect.subtreeFlags & (MutationMask | PassiveMask)) !== NoFlags &&
 			child !== null
 		) {
 			nextEffect = child;
 		} else {
 			// 向上遍历 DFS
 			up: while (nextEffect !== null) {
-				commitMutationEffectsOnFiber(nextEffect, root);
+				commitMutaitonEffectsOnFiber(nextEffect, root);
 				const sibling: FiberNode | null = nextEffect.sibling;
 
 				if (sibling !== null) {
 					nextEffect = sibling;
 					break up;
 				}
-
 				nextEffect = nextEffect.return;
 			}
 		}
 	}
 };
 
-const commitMutationEffectsOnFiber = (
+const commitMutaitonEffectsOnFiber = (
 	finishedWork: FiberNode,
-	root: FiberNode
+	root: FiberRootNode
 ) => {
 	const flags = finishedWork.flags;
 
-	// flags Placement
 	if ((flags & Placement) !== NoFlags) {
 		commitPlacement(finishedWork);
-		// 将 Placement 从 flags 中移出
 		finishedWork.flags &= ~Placement;
 	}
-
-	// flags Update
 	if ((flags & Update) !== NoFlags) {
 		commitUpdate(finishedWork);
 		finishedWork.flags &= ~Update;
 	}
-
-	// flags ChildDeletion
 	if ((flags & ChildDeletion) !== NoFlags) {
 		const deletions = finishedWork.deletions;
 		if (deletions !== null) {
@@ -83,8 +82,6 @@ const commitMutationEffectsOnFiber = (
 		}
 		finishedWork.flags &= ~ChildDeletion;
 	}
-
-	// collect effect
 	if ((flags & PassiveEffect) !== NoFlags) {
 		// 收集回调
 		commitPassiveEffect(finishedWork, root, 'update');
@@ -128,7 +125,6 @@ function commitHookEffectList(
 	} while (effect !== lastEffect.next);
 }
 
-// 组件卸载 不出发update
 export function commitHookEffectListUnmount(flags: Flags, lastEffect: Effect) {
 	commitHookEffectList(flags, lastEffect, (effect) => {
 		const destroy = effect.destroy;
@@ -138,7 +134,7 @@ export function commitHookEffectListUnmount(flags: Flags, lastEffect: Effect) {
 		effect.tag &= ~HookHasEffect;
 	});
 }
-// 触发所有上次组件的 destroy 触发 update
+
 export function commitHookEffectListDestroy(flags: Flags, lastEffect: Effect) {
 	commitHookEffectList(flags, lastEffect, (effect) => {
 		const destroy = effect.destroy;
@@ -247,7 +243,6 @@ function commitNestedComponent(
 }
 
 const commitPlacement = (finishedWork: FiberNode) => {
-	// finishedWork - DOM
 	if (__DEV__) {
 		console.warn('执行Placement操作', finishedWork);
 	}
@@ -257,8 +252,8 @@ const commitPlacement = (finishedWork: FiberNode) => {
 	// host sibling
 	const sibling = getHostSibling(finishedWork);
 
+	// finishedWork ~~ DOM append parent DOM
 	if (hostParent !== null) {
-		// finishedWork DOM append parent DOM
 		insertOrAppendPlacementNodeIntoContainer(finishedWork, hostParent, sibling);
 	}
 };
@@ -306,21 +301,18 @@ function getHostParent(fiber: FiberNode): Container | null {
 
 	while (parent) {
 		const parentTag = parent.tag;
-		// HostComponent
+		// HostComponent HostRoot
 		if (parentTag === HostComponent) {
 			return parent.stateNode as Container;
 		}
 		if (parentTag === HostRoot) {
 			return (parent.stateNode as FiberRootNode).container;
 		}
-
 		parent = parent.return;
 	}
-
 	if (__DEV__) {
 		console.warn('未找到host parent');
 	}
-
 	return null;
 }
 
@@ -329,7 +321,7 @@ function insertOrAppendPlacementNodeIntoContainer(
 	hostParent: Container,
 	before?: Instance
 ) {
-	// 找到 fiber 对应宿主环境的 host node
+	// fiber host
 	if (finishedWork.tag === HostComponent || finishedWork.tag === HostText) {
 		if (before) {
 			insertChildToContainer(finishedWork.stateNode, hostParent, before);

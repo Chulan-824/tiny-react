@@ -1,3 +1,5 @@
+// ReactDOM.createRoot(root).render(<App/>)
+
 import {
 	createContainer,
 	updateContainer

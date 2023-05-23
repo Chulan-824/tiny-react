@@ -1,19 +1,18 @@
-// 递归中的归阶段
 import {
+	appendInitialChild,
 	Container,
 	createInstance,
 	createTextInstance,
-	appendInitialChild
+	Instance
 } from 'hostConfig';
-import { updateFiberProps } from 'react-dom/src/SyntheticEvent';
 import { FiberNode } from './fiber';
 import { NoFlags, Update } from './fiberFlags';
 import {
-	Fragment,
-	FunctionComponent,
-	HostComponent,
 	HostRoot,
-	HostText
+	HostText,
+	HostComponent,
+	FunctionComponent,
+	Fragment
 } from './workTags';
 
 function markUpdate(fiber: FiberNode) {
@@ -21,23 +20,25 @@ function markUpdate(fiber: FiberNode) {
 }
 
 export const completeWork = (wip: FiberNode) => {
+	// 递归中的归
+
 	const newProps = wip.pendingProps;
 	const current = wip.alternate;
 
 	switch (wip.tag) {
 		case HostComponent:
 			if (current !== null && wip.stateNode) {
-				// update
+				// TODO update
 				// 1. props是否变化 {onClick: xx} {onClick: xxx}
 				// 2. 变了 Update flag
 				// className style
-				// 这里暂时不判断 props是否改变 直接调用赋值
-				updateFiberProps(wip.stateNode, newProps);
+				markUpdate(wip);
 			} else {
-				// 1. 构建 DOM
+				// mount
+				// 1. 构建DOM
 				// const instance = createInstance(wip.type, newProps);
 				const instance = createInstance(wip.type, newProps);
-				// 2. 将 DOM 插入到 DOM 树种
+				// 2. 将DOM插入到DOM树中
 				appendAllChildren(instance, wip);
 				wip.stateNode = instance;
 			}
@@ -46,15 +47,14 @@ export const completeWork = (wip: FiberNode) => {
 		case HostText:
 			if (current !== null && wip.stateNode) {
 				// update
-				const oldText = current.memoizedProps.content;
+				const oldText = current.memoizedProps?.content;
 				const newText = newProps.content;
 				if (oldText !== newText) {
 					markUpdate(wip);
 				}
 			} else {
-				// 1. 构建 DOM
+				// 1. 构建DOM
 				const instance = createTextInstance(newProps.content);
-				// 2. 将 DOM 插入到 DOM 树种
 				wip.stateNode = instance;
 			}
 			bubbleProperties(wip);
@@ -72,21 +72,18 @@ export const completeWork = (wip: FiberNode) => {
 	}
 };
 
-function appendAllChildren(parent: Container, wip: FiberNode) {
+function appendAllChildren(parent: Container | Instance, wip: FiberNode) {
 	let node = wip.child;
 
 	while (node !== null) {
 		if (node.tag === HostComponent || node.tag === HostText) {
-			// 直接插入对应的 DOM 节点
 			appendInitialChild(parent, node?.stateNode);
 		} else if (node.child !== null) {
-			// 继续往下遍历
 			node.child.return = node;
 			node = node.child;
 			continue;
 		}
 
-		// 递归到 hostRootFiber
 		if (node === wip) {
 			return;
 		}

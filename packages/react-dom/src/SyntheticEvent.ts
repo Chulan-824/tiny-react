@@ -92,7 +92,6 @@ function getEventCallbackNameFromEventType(
 	eventType: string
 ): string[] | undefined {
 	return {
-		// 先捕获 后冒泡
 		click: ['onClickCapture', 'onClick']
 	}[eventType];
 }
@@ -117,7 +116,6 @@ function collectPaths(
 				callbackNameList.forEach((callbackName, i) => {
 					const eventCallback = elementProps[callbackName];
 					if (eventCallback) {
-						// 遍历的时候顺序遍历模拟先捕获后冒泡
 						if (i === 0) {
 							// capture
 							paths.capture.unshift(eventCallback);

@@ -27,7 +27,6 @@ export const createUpdate = <State>(
 };
 
 export const createUpdateQueue = <State>() => {
-	// 返回对象 包裹shared 这样两个 fiber 树可以共用一个 updateQueue
 	return {
 		shared: {
 			pending: null
@@ -53,7 +52,6 @@ export const enqueueUpdate = <State>(
 	updateQueue.shared.pending = update;
 };
 
-// 消费 Update
 export const processUpdateQueue = <State>(
 	baseState: State,
 	pendingUpdate: Update<State> | null,
@@ -62,6 +60,7 @@ export const processUpdateQueue = <State>(
 	const result: ReturnType<typeof processUpdateQueue<State>> = {
 		memoizedState: baseState
 	};
+
 	if (pendingUpdate !== null) {
 		// 第一个update
 		const first = pendingUpdate.next;

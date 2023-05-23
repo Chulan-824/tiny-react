@@ -9,6 +9,7 @@ import {
 } from 'shared/ReactTypes';
 
 // ReactElement
+
 const ReactElement = function (
 	type: Type,
 	key: Key,
@@ -21,7 +22,7 @@ const ReactElement = function (
 		key,
 		ref,
 		props,
-		__mark: 'Chulan'
+		__mark: 'KaSong'
 	};
 	return element;
 };
@@ -34,39 +35,30 @@ export function isValidElement(object: any) {
 	);
 }
 
-export const jsx = function (
-	type: ElementType,
-	config: any,
-	...maybeChildren: any
-) {
-	let key = null;
-	let ref = null;
+export const jsx = (type: ElementType, config: any, ...maybeChildren: any) => {
+	let key: Key = null;
 	const props: Props = {};
+	let ref: Ref = null;
 
 	for (const prop in config) {
 		const val = config[prop];
-
 		if (prop === 'key') {
 			if (val !== undefined) {
 				key = '' + val;
 			}
 			continue;
 		}
-
 		if (prop === 'ref') {
 			if (val !== undefined) {
 				ref = val;
 			}
 			continue;
 		}
-
 		if ({}.hasOwnProperty.call(config, prop)) {
 			props[prop] = val;
 		}
 	}
-
 	const maybeChildrenLength = maybeChildren.length;
-
 	if (maybeChildrenLength) {
 		if (maybeChildrenLength === 1) {
 			props.children = maybeChildren[0];
@@ -74,56 +66,34 @@ export const jsx = function (
 			props.children = maybeChildren;
 		}
 	}
-
 	return ReactElement(type, key, ref, props);
 };
 
 export const Fragment = REACT_FRAGMENT_TYPE;
 
-export const jsxDEV = function (
-	type: ElementType,
-	config: any
-	// ...maybeChildren: any
-) {
-	let key = null;
-	let ref = null;
+export const jsxDEV = (type: ElementType, config: any) => {
+	let key: Key = null;
 	const props: Props = {};
+	let ref: Ref = null;
 
 	for (const prop in config) {
 		const val = config[prop];
-
 		if (prop === 'key') {
 			if (val !== undefined) {
 				key = '' + val;
 			}
 			continue;
 		}
-
 		if (prop === 'ref') {
 			if (val !== undefined) {
 				ref = val;
 			}
 			continue;
 		}
-
 		if ({}.hasOwnProperty.call(config, prop)) {
 			props[prop] = val;
 		}
 	}
-
-	// const maybeChildrenLength = maybeChildren.length;
-	// console.log(config, 'config');
-
-	// console.log(maybeChildren, 'maybeChildren');
-	// console.log(maybeChildrenLength, 'maybeChildrenLength jsxDEV');
-
-	// if (maybeChildrenLength) {
-	// 	if (maybeChildrenLength === 1) {
-	// 		props.children = maybeChildren[0];
-	// 	} else {
-	// 		props.children = maybeChildren;
-	// 	}
-	// }
 
 	return ReactElement(type, key, ref, props);
 };

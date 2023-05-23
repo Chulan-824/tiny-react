@@ -1,5 +1,3 @@
-// 递归中的递阶段
-
 import { ReactElementType } from 'shared/ReactTypes';
 import { mountChildFibers, reconcileChildFibers } from './childFibers';
 import { FiberNode } from './fiber';
@@ -14,8 +12,9 @@ import {
 	HostText
 } from './workTags';
 
+// 递归中的递阶段
 export const beginWork = (wip: FiberNode, renderLane: Lane) => {
-	// 比较 返回子 fiberNode
+	// 比较，返回子fiberNode
 	switch (wip.tag) {
 		case HostRoot:
 			return updateHostRoot(wip, renderLane);
@@ -33,7 +32,6 @@ export const beginWork = (wip: FiberNode, renderLane: Lane) => {
 			}
 			break;
 	}
-
 	return null;
 };
 
@@ -46,7 +44,6 @@ function updateFragment(wip: FiberNode) {
 function updateFunctionComponent(wip: FiberNode, renderLane: Lane) {
 	const nextChildren = renderWithHooks(wip, renderLane);
 	reconcileChildren(wip, nextChildren);
-
 	return wip.child;
 }
 
@@ -64,7 +61,6 @@ function updateHostRoot(wip: FiberNode, renderLane: Lane) {
 }
 
 function updateHostComponent(wip: FiberNode) {
-	// HostComponent 是无法触发更新
 	const nextProps = wip.pendingProps;
 	const nextChildren = nextProps.children;
 	reconcileChildren(wip, nextChildren);
